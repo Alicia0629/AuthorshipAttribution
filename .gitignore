@@ -1,2 +1,4 @@
 .idea
 /FrontEnd/node_modules
+__pycache__
+*.db
