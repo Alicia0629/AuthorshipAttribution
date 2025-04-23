@@ -1,4 +1,4 @@
-from runpod.serverless import Worker
+import runpod
 from model import train_model
 
 def handler(job):
@@ -11,4 +11,4 @@ def handler(job):
     result = train_model(file_content, text_col, label_col, user_id)
     return result
 
-Worker(handler).start()
+runpod.serverless.start({"handler": handler})
