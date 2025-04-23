@@ -1,4 +1,4 @@
-from runpod.serverless import Worker
+import runpod
 from model import predict_text
 
 def handler(job):
@@ -9,4 +9,4 @@ def handler(job):
     result = predict_text(text, user_id)
     return result
 
-Worker(handler).start()
+runpod.serverless.start({"handler": handler})
