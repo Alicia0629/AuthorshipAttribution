@@ -20,7 +20,7 @@ def compute_metrics(eval_pred):
     return {"accuracy": acc["accuracy"], "f1": f1["f1"]}
 
 def train_model(file_content, text_column, label_column, user_id):
-    file_decoded = base64.b64decode(file_content))
+    file_decoded = base64.b64decode(file_content)
     df = pd.read_csv(io.BytesIO(file_decoded))
     df = df[[text_column, label_column]]
     df.columns = ["text", "label"]
