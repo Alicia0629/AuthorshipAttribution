@@ -26,6 +26,7 @@ def train_model(file_content, text_column, label_column, user_id):
     df.columns = ["text", "label"]
 
     label_mapping = dict(enumerate(pd.Categorical(df["label"]).categories))
+    df["label"] = pd.Categorical(df["label"]).codes
     joblib.dump(label_mapping, f"/runpod-volume/{user_id}_labels.pkl")
 
     num_labels = df["label"].nunique()
