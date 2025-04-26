@@ -1,11 +1,8 @@
 import React from "react";
-import { Box } from "@mui/material";
-import backgroundImage from '../assets/background.jpg';
-import { Typography } from "@mui/material";
-
+import { Typography, Box, useTheme } from "@mui/material";
 
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
-  console.log("AuthLayout prepare");
+  const theme = useTheme();
   return (
       <Box
         sx={{
@@ -13,7 +10,7 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
           flexDirection: "row",
           width: "60%",
           maxWidth: "600px",
-          backgroundColor: "#fff",
+          backgroundColor: theme.palette.background.paper,
           borderRadius: 3,
           boxShadow: 3,
           padding: 3,
@@ -26,7 +23,6 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
             justifyContent: "center",
             alignItems: "center",
             flexDirection: "column",
-            color: "black",
             padding: 3,
           }}
         >

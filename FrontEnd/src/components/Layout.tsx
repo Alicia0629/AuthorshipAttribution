@@ -1,27 +1,27 @@
 import React from "react";
-import { Box } from "@mui/material";
-import backgroundImage from '../assets/background.jpg';
-import { Typography } from "@mui/material";
+import {Box, useTheme} from "@mui/material";
+import flowerImage from '../assets/flower.png';
 
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-  console.log("AuthLayout prepare");
+  const theme = useTheme();
   return (
     <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      minHeight="100vh" 
-      width="100vw" 
+      minHeight="100vh"
+      width="100vw"
       sx={{
-        backgroundImage: `url(${backgroundImage})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        minHeight: "100vh",
+        backgroundColor: theme.palette.background.default,
+        backgroundImage: `url(${flowerImage})`,
+        backgroundPosition: "left center",
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "contain",
+        backgroundAttachment: "fixed",
+        display: "block",
       }}
     >
-        {children} 
-          
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" width="100vw">
+        {children}
+      </Box>
     </Box>
   );
 };
