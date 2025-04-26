@@ -5,8 +5,8 @@ import joblib
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 tokenizer = AutoTokenizer.from_pretrained("mrm8488/bert-tiny-finetuned-sms-spam-detection")
 
-def predict_text(text, user_id):
-    model = AutoModelForSequenceClassification.from_pretrained("mrm8488/bert-tiny-finetuned-sms-spam-detection")
+def predict_text(text, user_id, num_labels):
+    model = AutoModelForSequenceClassification.from_pretrained("mrm8488/bert-tiny-finetuned-sms-spam-detection", num_labels=num_labels)
     model.load_state_dict(torch.load(f"/runpod-volume/{user_id}_model.pth", map_location=device))
     model.to(device)
 

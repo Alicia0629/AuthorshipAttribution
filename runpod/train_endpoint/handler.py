@@ -8,7 +8,6 @@ def handler(job):
     label_col = data['label_column']
     user_id = data['user_id']
 
-    result = train_model(file_content, text_col, label_col, user_id)
-    return result
+    return train_model(file_content, text_col, label_col, user_id)
 
 runpod.serverless.start({"handler": handler})
