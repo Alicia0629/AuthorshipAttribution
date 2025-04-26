@@ -6,7 +6,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 tokenizer = AutoTokenizer.from_pretrained("mrm8488/bert-tiny-finetuned-sms-spam-detection")
 
 def predict_text(text, user_id, num_labels):
-    model = torch.load(f"/runpod-volume/{user_id}_model.pth", map_location=device)
+    model = torch.load(f"/runpod-volume/{user_id}_model.pth", map_location=device, weights_only=False)
     model.to(device)
 
 
