@@ -69,5 +69,5 @@ def train_model(file_content, text_column, label_column, user_id):
     )
 
     trainer.train()
-    torch.save(model.state_dict(), f"/runpod-volume/{user_id}_model.pth")
+    torch.save(model, f"/runpod-volume/{user_id}_model.pth")
     return {"evaluate":trainer.evaluate(), "num_labels": num_labels}
