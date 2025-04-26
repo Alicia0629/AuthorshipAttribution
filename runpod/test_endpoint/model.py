@@ -7,7 +7,7 @@ tokenizer = AutoTokenizer.from_pretrained("mrm8488/bert-tiny-finetuned-sms-spam-
 
 def predict_text(text, user_id):
     model = AutoModelForSequenceClassification.from_pretrained("mrm8488/bert-tiny-finetuned-sms-spam-detection")
-    model.load_state_dict(torch.load(f"{user_id}_model.pth", map_location=device))
+    model.load_state_dict(torch.load(f"/runpod-volume/{user_id}_model.pth", map_location=device))
     model.to(device)
 
 
