@@ -25,12 +25,8 @@ def train_model(file_content, text_column, label_column, user_id):
     df = df[[text_column, label_column]]
     df.columns = ["text", "label"]
 
-    if df["label"].dtype == "object":
-        label_mapping = dict(enumerate(pd.Categorical(df["label"]).categories))
-        df["label"] = pd.Categorical(df["label"]).codes
-        joblib.dump(label_mapping, f"{user_id}_labels.pkl")
-    else:
-        label_mapping = None
+    label_mapping = dict(enumerate(pd.Categorical(df["label"]).categories))
+    joblib.dump(label_mapping, f"/runpod-volume/{user_id}_labels.pkl")
 
     num_labels = df["label"].nunique()
     model = AutoModelForSequenceClassification.from_pretrained(

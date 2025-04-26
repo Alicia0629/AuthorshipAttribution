@@ -12,7 +12,7 @@ def predict_text(text, user_id, num_labels):
 
     label_mapping = None
     try:
-        label_mapping = joblib.load(f"{user_id}_labels.pkl")
+        label_mapping = joblib.load(f"/runpod-volume/{user_id}_labels.pkl")
     except:
         pass
 
