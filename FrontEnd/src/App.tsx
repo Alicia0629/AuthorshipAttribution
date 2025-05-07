@@ -5,6 +5,7 @@ import AuthLayout from "./components/AuthLayout.tsx";
 import Login from "./pages/Login.tsx";
 import Profile from "./pages/Profile.tsx";
 import CreateModel from "./pages/CreateModel.tsx";
+import TopBarMenu from "./components/TopBar";
 import { lightTheme, darkTheme } from './styles/styles.tsx';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 
@@ -15,11 +16,18 @@ const App: React.FC = () => {
   useEffect(() => {
     const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
     setTheme(prefersDarkMode ? darkTheme : lightTheme);
+
+    const token = localStorage.getItem('token');
+    setIsAuthenticated(!!token);
   }, []);
 
 
   const handleAuthSuccess = (): void => {
     setIsAuthenticated(true);
+  };
+
+  const handleLogOut = (): void => {
+    setIsAuthenticated(false);
   };
 
   return (
@@ -29,12 +37,13 @@ const App: React.FC = () => {
           <Routes>
             <Route
               path="/login"
-              element={
+              element={!isAuthenticated ? 
                 <Layout>
                   <AuthLayout>
                     <Login onAuthSuccess={handleAuthSuccess} />
                   </AuthLayout>
                 </Layout>
+                 : <Navigate to="/create" />
               }
             />
             <Route
@@ -47,7 +56,7 @@ const App: React.FC = () => {
             />
             <Route
               path="/create"
-              element={<Layout><CreateModel /></Layout>}
+              element={isAuthenticated ? <Layout><TopBarMenu onLogOutSuccess={handleLogOut} /><CreateModel /></Layout> : <Navigate to="/login" />}
             />
           </Routes>
         </Router>

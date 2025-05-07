@@ -11,7 +11,9 @@ import {
   Divider,
   Alert,
   IconButton,
-  InputAdornment, useTheme
+  InputAdornment,
+  useTheme,
+  CircularProgress
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 
@@ -38,9 +40,13 @@ const AuthForm: React.FC<{ onAuthSuccess: () => void }> = ({ onAuthSuccess }) =>
       const response = await loginUser(email, password);
       localStorage.setItem('token', response.access_token);
       onAuthSuccess();
-      navigate('/profile');
+      navigate('/create');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Something went wrong');
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Ocurrió un error inesperado');
+      }
     } finally {
       setLoading(false);
     }
@@ -59,7 +65,7 @@ const AuthForm: React.FC<{ onAuthSuccess: () => void }> = ({ onAuthSuccess }) =>
     <Container maxWidth="sm">
       
         <Typography variant="h5" component="h2" align="center" gutterBottom>
-          {isLogin ? 'Login' : 'Register'}
+          {isLogin ? 'Iniciar sesión' : 'Registrar usuario'}
         </Typography>
         
         {error && (
@@ -81,7 +87,7 @@ const AuthForm: React.FC<{ onAuthSuccess: () => void }> = ({ onAuthSuccess }) =>
           />
 
           <TextField
-            label="Password"
+            label="Contraseña"
             type={showPassword ? 'text' : 'password'}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -100,23 +106,24 @@ const AuthForm: React.FC<{ onAuthSuccess: () => void }> = ({ onAuthSuccess }) =>
           />
 
           <CustomButton
+            type="submit"
             disabled={loading}
           >
-            {loading ? 'Processing...' : isLogin ? 'Login' : 'Register'}
+            {loading ? <CircularProgress size={24} color="inherit" /> : isLogin ? 'Iniciar sesión' : 'Registrar'}
           </CustomButton>
         </form>
 
         <Divider sx={{ my: 2 }} />
 
         <Typography align="center">
-          {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}
+          {isLogin ? "¿No tienes una cuenta?" : "¿Ya tienes una cuenta?"}{' '}
           <Link 
             component="button" 
             onClick={toggleAuthMode}
             sx={{ fontWeight: 'bold',
                   color: theme.palette.secondary.main }}
           >
-            {isLogin ? 'Register here' : 'Login here'}
+            {isLogin ? 'Registrate aquí' : 'Inicia sesión aquí'}
           </Link>
         </Typography>
     </Container>

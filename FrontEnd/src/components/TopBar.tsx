@@ -13,7 +13,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { deleteUserAccount } from '../services/api';
 
-export default function FloatingMenuButton() {
+const TopBarMenu: React.FC<{ onLogOutSuccess: () => void }> = ({ onLogOutSuccess }) => {
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -23,6 +23,7 @@ export default function FloatingMenuButton() {
   const handleClose = () => setAnchorEl(null);
   const handleLogout = () => {
     localStorage.removeItem('token');
+    onLogOutSuccess();
     navigate('/login');
   };
   const handleDeleteAccount = async () => {
@@ -33,8 +34,7 @@ export default function FloatingMenuButton() {
         const token = localStorage.getItem('token');
         if (token) {
           await deleteUserAccount(token);
-          localStorage.removeItem('token');
-          navigate('/');
+          handleLogout();
         }
       } catch (error) {
         alert(error.message);
@@ -60,8 +60,8 @@ export default function FloatingMenuButton() {
             width: 56,
             height: 56,
             borderRadius: '50%',
-            backgroundColor: theme.palette.primary.main,
-            color: theme.palette.getContrastText(theme.palette.primary.main),
+            backgroundColor: theme.palette.secondary.main,
+            color: theme.palette.background.paper,
             boxShadow: 4,
             '&:hover': {
               backgroundColor: theme.palette.secondary.main,
@@ -97,3 +97,5 @@ export default function FloatingMenuButton() {
     </Box>
   );
 }
+
+export default TopBarMenu;

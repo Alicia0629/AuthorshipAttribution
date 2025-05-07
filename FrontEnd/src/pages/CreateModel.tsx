@@ -5,20 +5,43 @@ import {
   CircularProgress,
   Alert,
   AlertTitle,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from '@mui/material';
 import { useTheme, Tooltip, IconButton, Button, Input } from '@mui/material';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import DeleteIcon from '@mui/icons-material/Delete';
-import TopBar from "../components/TopBar";
 import CustomButton from "../components/Button.tsx"
+import Papa from 'papaparse';
 
 const CreateModel: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
+  const [columns, setColumns] = useState<string[]>([]);
   const [textColumn, setTextColumn] = useState<string>('');
   const [authorColumn, setAuthorColumn] = useState<string>('');
   const theme = useTheme();
+
+  const handleFileUpload = (file: File) => {
+    setLoading(true);
+    Papa.parse(file, {
+      complete: (result) => {
+        console.log(result);
+        console.log(result.meta);
+        console.log(result.meta.fields);
+        const csvColumns = result.meta.fields; 
+        setColumns(csvColumns);
+        setLoading(false);
+      },
+      header: true,
+      skipEmptyLines: true,
+      dynamicTyping: true 
+    });
+  };
+
 
   useEffect(() => {
     
@@ -63,7 +86,6 @@ const CreateModel: React.FC = () => {
 
   return (
     <Box sx={{ maxWidth: 1200, mx: 'auto', my: 4 }}>
-      <TopBar />
       <Box alignItems="center" sx={{
           display: "flex",
           flexDirection: "column",
@@ -74,25 +96,23 @@ const CreateModel: React.FC = () => {
           boxShadow: 3,
           padding: 3,
         }}>
-        <Typography variant="h5" component="h2" align="center" gutterBottom>
-          Crea un modelo de atribución de autoría
-        </Typography>
-        <p>Sube tus datos
+        <Typography variant="h3" component="h1">Sube tus datos
           <Tooltip title="Tienes que subir un archivo .csv que tenga al menos una columna con nombres u apodos de autores, y otra columna con el texto escrito por estos autores.">
             <IconButton size="small" sx={{ ml: 1 }}>
               <HelpOutlineIcon fontSize="small" />
             </IconButton>
           </Tooltip>
-        </p>
+        </Typography>
+        <p></p>
         {selectedFile ? (
           <Box display="flex" alignItems="center" gap={1} mt={1}>
-            <Typography variant="body2">{selectedFile.name}</Typography>
+            <Typography variant="h6">{selectedFile.name}</Typography>
             <IconButton
-              size="small"
+              size="medium"
               color="error"
               onClick={() => setSelectedFile(null)}
             >
-              <DeleteIcon fontSize="small" />
+              <DeleteIcon fontSize="medium" />
             </IconButton>
           </Box>
         ) : (
@@ -106,44 +126,69 @@ const CreateModel: React.FC = () => {
                 const file = e.target.files?.[0];
                 if (file) {
                   setSelectedFile(file);
+                  handleFileUpload(file);
                 }
               }}
             />
-            <Button variant="contained" component="span">
+            <CustomButton variant="contained" component="span">
               Subir archivo .csv
-            </Button>
+            </CustomButton>
           </label>
         )}
-        <p></p>
+
         {selectedFile && (
           <>
+            <p></p>
             <Box sx={{ mt: 2, width: '100%' }}>
-              <Typography variant="body2">Columna de textos:</Typography>
-              <Input
-                value={textColumn}
-                onChange={(e) => setTextColumn(e.target.value)}
-                fullWidth
-                placeholder="Escribe el nombre de la columna de textos"
-              />
+              <FormControl fullWidth>
+                <InputLabel>Selecciona la columna de textos</InputLabel>
+                <Select
+                  value={textColumn}
+                  onChange={(e) => setTextColumn(e.target.value)}
+                  label="Selecciona la columna de textos"
+                  fullWidth
+                >
+                  {columns.map((column, index) => (
+                    <MenuItem key={index} value={column}>
+                      {column}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Box>
+
             <Box sx={{ mt: 2, width: '100%' }}>
-              <Typography variant="body2">Columna de autores:</Typography>
-              <Input
-                value={authorColumn}
-                onChange={(e) => setAuthorColumn(e.target.value)}
-                fullWidth
-                placeholder="Escribe el nombre de la columna de autores"
-              />
+              <FormControl fullWidth>
+                <InputLabel>Selecciona la columna de autores</InputLabel>
+                <Select
+                  value={authorColumn}
+                  onChange={(e) => setAuthorColumn(e.target.value)}
+                  label="Selecciona la columna de autores"
+                  fullWidth
+                >
+                  {columns.map((column, index) => (
+                    <MenuItem key={index} value={column}>
+                      {column}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Box>
           </>
         )}
-        <p></p>
-        <CustomButton
-            disabled={!selectedFile}
-            sx={{ mt: 3 }}
-        >
-          {'Crear modelo'}
-        </CustomButton>
+        {selectedFile && textColumn && authorColumn ? 
+          <>
+            <p></p>
+            <CustomButton
+              disabled={!selectedFile}
+              sx={{ mt: 3 }}
+            >
+              {'Crear modelo'}
+            </CustomButton>
+          </>
+        : <></>
+        }
+        
       </Box>
     </Box>
   );

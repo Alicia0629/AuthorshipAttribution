@@ -26,7 +26,7 @@ export const loginUser = async (email: string, password: string) => {
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      throw new Error(error.response?.data?.detail || 'Error al haver login');
+      throw new Error(error.response?.data?.detail || 'Error al hacer login');
     }
     throw new Error('Error desconocido al hacer login');
   }
