@@ -47,3 +47,18 @@ export const getUserProfile = async (token: string) => {
     throw new Error('Error desconocido al obtener datos');
   }
 };
+
+export const deleteUserAccount = async (token: string) => {
+  try {
+    await axios.delete(`${API_URL}/delete-account`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.detail || 'Error al eliminar cuenta');
+    }
+    throw new Error('Error desconocido al eliminar cuenta');
+  }
+};

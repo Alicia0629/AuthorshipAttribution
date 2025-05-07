@@ -4,6 +4,7 @@ import Layout from "./components/Layout";
 import AuthLayout from "./components/AuthLayout.tsx";
 import Login from "./pages/Login.tsx";
 import Profile from "./pages/Profile.tsx";
+import CreateModel from "./pages/CreateModel.tsx";
 import { lightTheme, darkTheme } from './styles/styles.tsx';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 
@@ -43,6 +44,10 @@ const App: React.FC = () => {
             <Route
               path="/"
               element={<Navigate to="/login" />}
+            />
+            <Route
+              path="/create"
+              element={<Layout><CreateModel /></Layout>}
             />
           </Routes>
         </Router>
