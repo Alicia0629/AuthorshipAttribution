@@ -3,15 +3,18 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm ci
 
-FROM node:18-alpine AS dev
+FROM node:18-alpine AS builder
 WORKDIR /app
-
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+ENV NODE_ENV=production
+RUN npm run build
 
-ENV NODE_ENV=development
-ENV VITE_API_BASE_URL=http://localhost:8000
+FROM node:18-alpine AS runner
+WORKDIR /app
+RUN npm install -g serve
+COPY --from=builder /app/dist ./dist
 
 EXPOSE 5173
 
-CMD ["npm", "run", "dev"]
+CMD ["serve", "-s", "dist", "-l", "4173"]
