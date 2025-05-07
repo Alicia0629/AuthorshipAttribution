@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000';
+const API_URL = import.meta.env.VITE_API_URL;
 
 export const registerUser = async (email: string, password: string) => {
   try {
@@ -10,7 +10,10 @@ export const registerUser = async (email: string, password: string) => {
     });
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.detail || 'Error al registrar');
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.detail || 'Error al registrar');
+    }
+    throw new Error('Error desconocido al registrar');
   }
 };
 
@@ -22,7 +25,10 @@ export const loginUser = async (email: string, password: string) => {
     });
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.detail || 'Error al hacer login');
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.detail || 'Error al haver login');
+    }
+    throw new Error('Error desconocido al hacer login');
   }
 };
 
@@ -35,6 +41,9 @@ export const getUserProfile = async (token: string) => {
     });
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.detail || 'Error al obtener datos');
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.detail || 'Error al obtener datos');
+    }
+    throw new Error('Error desconocido al obtener datos');
   }
 };
