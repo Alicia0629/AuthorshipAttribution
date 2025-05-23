@@ -40,7 +40,7 @@ const AuthForm: React.FC<{ onAuthSuccess: () => void }> = ({ onAuthSuccess }) =>
       const response = await loginUser(email, password);
       localStorage.setItem('token', response.access_token);
       onAuthSuccess();
-      navigate('/create');
+      navigate('/home');
     } catch (err: any) {
       if (err instanceof Error) {
         setError(err.message);

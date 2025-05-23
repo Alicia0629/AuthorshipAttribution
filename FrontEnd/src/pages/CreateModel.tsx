@@ -15,8 +15,13 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CustomButton from "../components/Button.tsx"
 import Papa from 'papaparse';
+import { sendModelData } from '../services/api.ts'
 
-const CreateModel: React.FC = () => {
+interface CreateModelProps {
+  onNext: (modelId: string) => void;
+}
+
+const CreateModel: React.FC<CreateModelProps> = ({ onNext }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
@@ -29,9 +34,6 @@ const CreateModel: React.FC = () => {
     setLoading(true);
     Papa.parse(file, {
       complete: (result) => {
-        console.log(result);
-        console.log(result.meta);
-        console.log(result.meta.fields);
         const csvColumns = result.meta.fields; 
         setColumns(csvColumns);
         setLoading(false);
@@ -41,6 +43,41 @@ const CreateModel: React.FC = () => {
       dynamicTyping: true 
     });
   };
+
+  const handleCreateModel = async () => {
+    if (!selectedFile || !textColumn || !authorColumn) return;
+  
+    const reader = new FileReader();
+  
+    reader.onload = async () => {
+      const csvText = reader.result as string;
+      
+      Papa.parse(csvText, {
+        header: true,
+        complete: async (results) => {
+          const labels = results.data.map((row: any) => row[authorColumn]);
+          const uniqueLabels = Array.from(new Set(labels)).filter(Boolean);
+          
+          const base64File = btoa(unescape(encodeURIComponent(csvText)));
+          const token = localStorage.getItem('token');
+          
+          if (token) {
+            const payload = {
+              file: base64File,
+              text_column: textColumn,
+              label_column: authorColumn,
+              num_labels: uniqueLabels.length
+            };
+            const response = await sendModelData(payload, token);
+            onNext(response.model_id);
+          }
+        }
+      });
+    };
+  
+    reader.readAsText(selectedFile);
+  };
+  
 
 
   useEffect(() => {
@@ -182,6 +219,7 @@ const CreateModel: React.FC = () => {
             <CustomButton
               disabled={!selectedFile}
               sx={{ mt: 3 }}
+              onClick={handleCreateModel}
             >
               {'Crear modelo'}
             </CustomButton>

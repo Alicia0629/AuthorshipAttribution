@@ -8,6 +8,7 @@ import CreateModel from "./pages/CreateModel.tsx";
 import TopBarMenu from "./components/TopBar";
 import { lightTheme, darkTheme } from './styles/styles.tsx';
 import { ThemeProvider, CssBaseline } from '@mui/material';
+import MultiStepModel from "./pages/MultiStepModel.tsx";
 
 const App: React.FC = () => {
   const [theme, setTheme] = useState(lightTheme);
@@ -43,7 +44,7 @@ const App: React.FC = () => {
                     <Login onAuthSuccess={handleAuthSuccess} />
                   </AuthLayout>
                 </Layout>
-                 : <Navigate to="/create" />
+                 : <Navigate to="/home" />
               }
             />
             <Route
@@ -55,8 +56,8 @@ const App: React.FC = () => {
               element={<Navigate to="/login" />}
             />
             <Route
-              path="/create"
-              element={isAuthenticated ? <Layout><TopBarMenu onLogOutSuccess={handleLogOut} /><CreateModel /></Layout> : <Navigate to="/login" />}
+              path="/home"
+              element={isAuthenticated ? <Layout><TopBarMenu onLogOutSuccess={handleLogOut} /><MultiStepModel /></Layout> : <Navigate to="/login" />}
             />
           </Routes>
         </Router>
