@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, CircularProgress, Alert, LinearProgress, useTheme } from '@mui/material';
+import { Box, Typography, Alert, LinearProgress, useTheme } from '@mui/material';
 import { checkModelStatus } from '../services/api';
 
 interface TrainModelProps {
