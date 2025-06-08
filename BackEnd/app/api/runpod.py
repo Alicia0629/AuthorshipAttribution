@@ -1,7 +1,6 @@
-from fastapi import APIRouter, UploadFile, File, Depends, Form, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-import pandas as pd
-import base64, json, requests, time, tempfile, os
+import json, requests, time
 from sqlalchemy.orm import Session
 from app.core.config import URL_TRAIN, URL_TEST, RUNPOD_KEY
 import app.core.auth as auth
@@ -57,7 +56,6 @@ def train_model(
 
 @router.post("/predict")
 def predict_endpoint(
-    num_labels: int,
     text: str,
     model_id: str,
     current_user: schemasUser.UserOut = Depends(auth.get_current_user),
@@ -72,11 +70,10 @@ def predict_endpoint(
         raise HTTPException(status_code=403, detail="Access denied")
     
     payload = {
-        "id": f"job-{email}-{str(time.time())}",
+        "id": f"job-{email}-{model_id}-{str(time.time())}",
         "input": {
             "text": text,
-            "user_id": email,
-            "num_labels": num_labels
+            "model_id": model_id,
         }
     }
 
