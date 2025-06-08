@@ -27,7 +27,7 @@ def train_model(file_content, text_column, label_column, model_id):
 
     label_mapping = dict(enumerate(pd.Categorical(df["label"]).categories))
     df["label"] = pd.Categorical(df["label"]).codes
-    joblib.dump(label_mapping, f"/mnt/storage/{model_id}_labels.pkl")
+    joblib.dump(label_mapping, f"/runpod-volume/{model_id}_labels.pkl")
 
     num_labels = df["label"].nunique()
     model = AutoModelForSequenceClassification.from_pretrained(
@@ -66,5 +66,5 @@ def train_model(file_content, text_column, label_column, model_id):
     )
 
     trainer.train()
-    torch.save(model, f"/mnt/storage/{model_id}_model.pth")
+    torch.save(model, f"/runpod-volume/{model_id}_model.pth")
     return {"evaluate":trainer.evaluate(), "num_labels": num_labels}

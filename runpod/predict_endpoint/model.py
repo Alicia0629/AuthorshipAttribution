@@ -7,13 +7,13 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 tokenizer = AutoTokenizer.from_pretrained("mrm8488/bert-tiny-finetuned-sms-spam-detection")
 
 def predict_text(text, model_id):
-    model = torch.load(f"/mnt/storage/{model_id}_model.pth", map_location=device, weights_only=False)
+    model = torch.load(f"/runpod-volume/{model_id}_model.pth", map_location=device, weights_only=False)
     model.to(device)
 
 
     label_mapping = None
     try:
-        label_mapping = joblib.load(f"/mnt/storage/{model_id}_labels.pkl")
+        label_mapping = joblib.load(f"/runpod-volume/{model_id}_labels.pkl")
     except:
         pass
 
