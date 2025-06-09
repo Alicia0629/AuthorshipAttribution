@@ -3,10 +3,10 @@ import os
 
 def handler(job):
     data = job['input']
-    user_id = data['user_id']
+    model_id = data['model_id']
     try:
-        os.remove(f"/runpod-volume/{user_id}_labels.pkl")
-        os.remove(f"/runpod-volume/{user_id}_model.pth")
+        os.remove(f"/runpod-volume/{model_id}_labels.pkl")
+        os.remove(f"/runpod-volume/{model_id}_model.pth")
         return "sucess"
     except FileNotFoundError:
         return "error"
