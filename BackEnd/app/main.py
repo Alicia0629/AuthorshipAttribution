@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import app.api.auth as auth
 import app.api.users as users
-import app.api.runpod as runpod
+import app.api.model as model
 from app.db.base import Base
 from app.db.session import engine
 
@@ -21,4 +21,4 @@ app.add_middleware(
 
 app.include_router(users.router, prefix="/users", tags=["users"])
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
-app.include_router(runpod.router, prefix="/runpod", tags=["RunPod"])
+app.include_router(model.router, prefix="/model", tags=["model"])

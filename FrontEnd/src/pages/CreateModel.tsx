@@ -10,7 +10,7 @@ import {
   Select,
   MenuItem
 } from '@mui/material';
-import { useTheme, Tooltip, IconButton, Button, Input } from '@mui/material';
+import { useTheme, Tooltip, IconButton, Input } from '@mui/material';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CustomButton from "../components/Button.tsx"
@@ -69,6 +69,8 @@ const CreateModel: React.FC<CreateModelProps> = ({ onNext }) => {
               num_labels: uniqueLabels.length
             };
             const response = await sendModelData(payload, token);
+            console.log("Response from sendModelData:", response);
+            console.log("Model ID:", response.model_id);
             onNext(response.model_id);
           }
         }

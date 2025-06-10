@@ -2,9 +2,29 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
+    <title>Atribución de autoría</title>
+    <link id="favicon" rel="icon" type="image/png" href="/autor-claro.png" />
+    <script>
+      // Detectar el esquema de color preferido
+      const setFavicon = () => {
+        const favicon = document.getElementById('favicon');
+        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        // Cambiar el favicon según el tema
+        if (prefersDarkScheme) {
+          favicon.href = '/autor-oscuro.png'; // Ícono para modo oscuro
+        } else {
+          favicon.href = '/autor-claro.png'; // Ícono para modo claro
+        }
+      };
+
+      // Establecer el favicon al cargar la página
+      setFavicon();
+
+      // Escuchar cambios en el esquema de color
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', setFavicon);
+    </script>
   </head>
   <body>
     <div id="root"></div>

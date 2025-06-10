@@ -19,7 +19,7 @@ def get_model_by_id(db: Session, model_id: str):
 
 
 def update_model_status(db: Session, data: ModelUpdateStatus):
-    db_model = db.query(Model).filter(Model.model_id == data.model_id).first()
+    db_model = db.query(Model).filter(Model.id == data.model_id).first()
     if not db_model:
         return None
 
@@ -33,7 +33,7 @@ def update_model_status(db: Session, data: ModelUpdateStatus):
     return db_model
 
 def delete_model(db: Session, model_id: str):
-    db_model = db.query(Model).filter(Model.model_id == model_id).first()
+    db_model = db.query(Model).filter(Model.id == model_id).first()
     if db_model:
         db.delete(db_model)
         db.commit()
@@ -44,7 +44,11 @@ def update_id_runpod_model(db: Session, model_id: int, new_runpod_model_id: str)
     db_model = db.query(Model).filter(Model.id == model_id).first()
     if db_model:
         db_model.runpod_model_id = new_runpod_model_id
-        db_model.commit()
+        db.commit()
+        db.refresh(db_model)
         return True
     
     return False
+
+def get_latest_model_by_user(db: Session, user_id: int):
+    return db.query(Model).filter(Model.user_id == user_id).order_by(Model.created_at.desc()).first()

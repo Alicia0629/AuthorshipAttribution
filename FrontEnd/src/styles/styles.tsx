@@ -27,13 +27,21 @@ const lightTheme = createTheme({
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',
-    primary: { main: '#333333' },
-    secondary: { main: '#a97ca5',
-                dark: '#8f748d'},
-    text: { primary: '#fdf5ff' },
+    primary: {
+      main: '#c778f7',
+      light: '#0f021d',},
+    secondary: { 
+      main: '#8621c4',
+      dark: '#391a5e',
+      light: '#1b0633',
+      contrastText: '#000',
+    },
+    text: {
+      primary: '#dddddd',
+      secondary: '#aaaaaa',},
     background: {
-      default: '#d8c8db',
-      paper: '#5e3f56',
+      default: '#000000',
+      paper: '#281a3a',
     },
   },
 });

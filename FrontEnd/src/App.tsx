@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
-import Layout from "./components/Layout";
-import AuthLayout from "./components/AuthLayout.tsx";
+import Layout from "./components/Layout/GeneralLayout.tsx";
+import AuthLayout from "./components/Layout/AuthLayout.tsx";
 import Login from "./pages/Login.tsx";
 import Profile from "./pages/Profile.tsx";
 import CreateModel from "./pages/CreateModel.tsx";
