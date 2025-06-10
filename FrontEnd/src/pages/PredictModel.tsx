@@ -5,7 +5,7 @@ import { predictText, checkModelStatus, getModelDetails , deleteModel} from '../
 
 interface PredictModelProps {
   model_id: string;
-  onNext: () => void;
+  onNext: (step?: string, data?: any, message?: string) => void;
 }
 
 interface ModelData {
@@ -135,8 +135,14 @@ const PredictModel: React.FC<PredictModelProps> = ({ model_id, onNext }) => {
           color="secondary"
           sx={{ mt: 2, cursor: 'pointer', textDecoration: 'underline' }}
           onClick={async () => {
-            await deleteModel(model_id, token);
-            handleClassify();
+            try {
+              await deleteModel(model_id, token);
+              onNext('loading', undefined, 'Eliminando el modelo...'); 
+            } catch (error) {
+              console.error('Error al eliminar el modelo:', error);
+            } finally {
+              setLoading(false);
+            }
           }}
         >
           Quiero eliminar este modelo

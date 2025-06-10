@@ -156,7 +156,7 @@ def delete_model(
 
 @router.get("/status/{model_id}")
 def check_status(
-    model_id: int,
+    model_id: str,
     db: Session = Depends(get_db),
     current_user: schemasUser.UserOut = Depends(auth.get_current_user)
 ):
@@ -218,10 +218,11 @@ def get_latest_model(
 
 @router.get("/{model_id}")
 def get_model_details(
-    model_id: int,
+    model_id: str,
     db: Session = Depends(get_db),
     current_user: schemasUser.UserOut = Depends(auth.get_current_user)
 ):
+    print(model_id)
     model = crud.get_model_by_id(db, model_id=model_id)
     if not model:
         raise HTTPException(status_code=404, detail="Model not found")
