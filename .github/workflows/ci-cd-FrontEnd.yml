@@ -1,0 +1,42 @@
+name: CI/CD Frontend Pipeline
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          cd FrontEnd
+          npm ci
+
+      - name: Run tests
+        run: |
+          cd FrontEnd
+          npm test
+
+      - name: Build application
+        run: |
+          cd FrontEnd
+          npm run build
+
+      - name: Build Docker image
+        run: |
+          cd FrontEnd
+          docker build -t authorship-attribution-frontend .
