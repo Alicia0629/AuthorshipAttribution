@@ -1,0 +1,56 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd BackEnd
+          pip install -r requirements.txt
+
+      - name: Run tests
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          ALGORITHM: ${{ secrets.ALGORITHM }}
+          ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
+          URL_TRAIN: ${{ secrets.URL_TRAIN }}
+          URL_PREDICT: ${{ secrets.URL_PREDICT }}
+          URL_DELETE: ${{ secrets.URL_DELETE }}
+          RUNPOD_KEY: ${{ secrets.RUNPOD_KEY }}
+          DB_URL: ${{ secrets.DB_URL }}
+          PYTHONPATH: ./BackEnd
+        run: |
+          cd BackEnd
+          pytest
+
+      - name: Build Docker image
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          ALGORITHM: ${{ secrets.ALGORITHM }}
+          ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
+          URL_TRAIN: ${{ secrets.URL_TRAIN }}
+          URL_PREDICT: ${{ secrets.URL_PREDICT }}
+          URL_DELETE: ${{ secrets.URL_DELETE }}
+          RUNPOD_KEY: ${{ secrets.RUNPOD_KEY }}
+          DB_URL: ${{ secrets.DB_URL }}
+        run: |
+          cd BackEnd
+          docker build -t authorship-attribution .
