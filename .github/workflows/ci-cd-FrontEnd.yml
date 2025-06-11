@@ -26,10 +26,10 @@ jobs:
           cd FrontEnd
           npm ci
 
-      - name: Run tests
+      - name: Check for unused imports
         run: |
           cd FrontEnd
-          npm test
+          npx eslint src --ext .js,.jsx,.ts,.tsx
 
       - name: Build application
         run: |
@@ -40,3 +40,20 @@ jobs:
         run: |
           cd FrontEnd
           docker build -t authorship-attribution-frontend .
+
+      - name: Run tests with coverage
+        run: |
+          cd FrontEnd
+          npm test -- --coverage
+          mkdir -p coverage && mv coverage/lcov.info coverage/
+
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@v2
+        with:
+          args: >
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
+            -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.javascript.lcov.reportPaths=FrontEnd/coverage/lcov.info
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
