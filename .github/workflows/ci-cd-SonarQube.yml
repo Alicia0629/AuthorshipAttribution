@@ -46,7 +46,6 @@ jobs:
         run: |
           cd FrontEnd
           npm test -- --coverage
-          mkdir -p coverage && mv coverage/lcov.info coverage/
 
       - name: SonarQube Scan
         env:
