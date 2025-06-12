@@ -11,6 +11,19 @@ import app.schemas.model as schemasModel
 
 router = APIRouter()
 
+
+HEADERS = {
+    "Authorization": RUNPOD_KEY,
+    "accept": "application/json"
+}
+
+def check_model(current_user, model):
+    if not model:
+        raise HTTPException(status_code=404, detail="Model not found")
+    if model.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Access denied")
+
+
 class TrainRequest(BaseModel):
     text_column: str
     label_column: str
@@ -23,7 +36,6 @@ def train_model(
     db: Session = Depends(get_db),
     current_user: schemasUser.UserOut = Depends(auth.get_current_user)):
 
-    print("train_model")
     email = current_user.email
 
     # Crear el modelo en la base de datos inicialmente con un estado "pending"
@@ -52,12 +64,7 @@ def train_model(
         }
     }
 
-    headers = {
-        "Authorization": RUNPOD_KEY,
-        "accept": "application/json"
-    }
-
-    response = requests.post(f"{URL_TRAIN}/run", headers=headers, data=json.dumps(payload))
+    response = requests.post(f"{URL_TRAIN}/run", headers=HEADERS, data=json.dumps(payload))
     response = response.json()
 
     # Actualizar el modelo con el runpod_model_id y cambiar el estado a "training"
@@ -70,7 +77,6 @@ def train_model(
         )
     )
     crud.update_id_runpod_model(db=db, model_id=model_id, new_runpod_model_id=runpod_model_id)
-    print(model_id, runpod_model_id)
 
     return {"job_id": job_id, "model_id": model_id, "response": response}
 
@@ -90,10 +96,7 @@ def predict_endpoint(
     email = current_user.email
 
     model = crud.get_model_by_id(db, model_id=request.model_id)
-    if not model:
-        raise HTTPException(status_code=404, detail="Model not found")
-    if not model or model.user_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Access denied")
+    check_model(current_user, model)
     
     payload = {
         "id": f"job-{email}-{request.model_id}-{str(time.time())}",
@@ -103,12 +106,7 @@ def predict_endpoint(
         }
     }
 
-    headers = {
-        "Authorization": RUNPOD_KEY,
-        "accept": "application/json"
-    }
-
-    response = requests.post(f"{URL_PREDICT}/run", headers=headers, data=json.dumps(payload))
+    response = requests.post(f"{URL_PREDICT}/run", headers=HEADERS, data=json.dumps(payload))
     
     response_json = json.loads(response.text)
 
@@ -127,13 +125,9 @@ def delete_model(
     current_user: schemasUser.UserOut = Depends(auth.get_current_user),
     db: Session = Depends(get_db)
 ):
-    print("datos recibidos para eliminar:", request)
     email = current_user.email
     model = crud.get_model_by_id(db, model_id=request.model_id)
-    if not model:
-        raise HTTPException(status_code=404, detail="Model not found")
-    if model.user_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Access denied")
+    check_model(current_user, model)
     
     payload = {
         "id": f"job-{email}-{request.model_id}-{str(time.time())}",
@@ -142,16 +136,10 @@ def delete_model(
         }
     }
 
-    headers = {
-        "Authorization": RUNPOD_KEY,
-        "accept": "application/json"
-    }
-
-    response = requests.post(f"{URL_DELETE}/run", headers=headers, data=json.dumps(payload))
-    print(response.status_code)
-    print("response delete:", response.json())
+    response = requests.post(f"{URL_DELETE}/run", headers=HEADERS, data=json.dumps(payload))
 
     return response.json()
+
 
 
 @router.get("/status/{model_id}")
@@ -161,13 +149,9 @@ def check_status(
     current_user: schemasUser.UserOut = Depends(auth.get_current_user)
 ):
     model = crud.get_model_by_id(db, model_id=model_id)
-    if not model:
-        raise HTTPException(status_code=404, detail="Model not found")
-    if model.user_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Access denied")
+    check_model(current_user, model)
 
     url = URL_TRAIN if model.status == "training" else URL_PREDICT
-    print(model.status, model.runpod_model_id)
 
     response = requests.get(f"{url}/status/{model.runpod_model_id}", headers={"Authorization": RUNPOD_KEY})
     res_json = response.json()
@@ -176,7 +160,6 @@ def check_status(
     if error_json:
         try:
             error_data = json.loads(error_json)
-            print("error_data type:", error_data.get("error_type"))
             if error_data.get("error_type") == "<class 'FileNotFoundError'>":
                 if not crud.delete_model(db, model_id=model_id):
                     raise HTTPException(status_code=500, detail="Error al eliminar el modelo de la base de datos")
@@ -184,7 +167,6 @@ def check_status(
         except Exception:
             pass
 
-    print(res_json)
 
     if res_json.get("status") == "COMPLETED" and model.status == "training":
         eval_data = res_json.get("output", {}).get("evaluate", {})
@@ -205,11 +187,10 @@ def get_latest_model(
     db: Session = Depends(get_db),
     current_user: schemasUser.UserOut = Depends(auth.get_current_user)
 ):
-    print("get_latest_model")
     model = crud.get_latest_model_by_user(db, user_id=current_user.id)
     if not model:
         return {"status": "no_model"}
-    print(model.id, model.status)
+
     return {
         "model_id": model.id,
         "status": model.status
@@ -222,12 +203,8 @@ def get_model_details(
     db: Session = Depends(get_db),
     current_user: schemasUser.UserOut = Depends(auth.get_current_user)
 ):
-    print(model_id)
     model = crud.get_model_by_id(db, model_id=model_id)
-    if not model:
-        raise HTTPException(status_code=404, detail="Model not found")
-    if model.user_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Access denied")
+    check_model(current_user, model)
 
     return {
         "eval_accuracy": model.eval_accuracy,

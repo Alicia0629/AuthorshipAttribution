@@ -12,7 +12,7 @@ const MultiStepModel = () => {
   const handleRedirect = (newStep: 'loading' | 'upload' | 'training' | 'predict', modelId?: string, message?: string) => {
     console.log(`Redirecting to step: ${newStep}, modelId: ${modelId}, message: ${message}`);
     
-    setModel_id(modelId || '');
+    setModel_id(modelId ?? '');
     if (message) setLoadingMessage(message); // Actualizar el mensaje si se proporciona
     setStep(newStep);
   };

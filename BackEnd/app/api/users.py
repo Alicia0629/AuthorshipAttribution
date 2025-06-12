@@ -24,4 +24,4 @@ def delete_account(current_user: schemas.UserOut = Depends(auth.get_current_user
     if not db_user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     crud.delete_user(db, db_user)
-    return
+    return {"sucess": True}

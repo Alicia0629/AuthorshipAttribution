@@ -94,14 +94,16 @@ const AuthForm: React.FC<{ onAuthSuccess: () => void }> = ({ onAuthSuccess }) =>
             fullWidth
             margin="normal"
             required
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={handleTogglePassword}>
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={handleTogglePassword}>
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
             }}
           />
 
@@ -109,7 +111,10 @@ const AuthForm: React.FC<{ onAuthSuccess: () => void }> = ({ onAuthSuccess }) =>
             type="submit"
             disabled={loading}
           >
-            {loading ? <CircularProgress size={24} color="inherit" /> : isLogin ? 'Iniciar sesión' : 'Registrar'}
+            {(() => {
+              if (loading) return <CircularProgress size={24} color="inherit" />;
+              return isLogin ? 'Iniciar sesión' : 'Registrar';
+            })()}
           </CustomButton>
         </form>
 

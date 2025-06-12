@@ -6,7 +6,10 @@ COPY . /app
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# Non-root user for security
+RUN groupadd -r appuser && useradd --no-log-init -r -g appuser appuser
+RUN chown -R appuser:appuser /app
+USER appuser
 
 EXPOSE 8000
 

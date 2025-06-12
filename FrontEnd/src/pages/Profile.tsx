@@ -88,7 +88,7 @@ const Profile: React.FC = () => {
               <ListItemText 
                 primary="Email" 
                 secondary={user.email}
-                secondaryTypographyProps={{ color: 'text.primary' }}
+                color='text.primary'
               />
             </ListItem>
 

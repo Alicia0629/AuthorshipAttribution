@@ -76,13 +76,11 @@ const TopBarMenu: React.FC<{ onLogOutSuccess: () => void }> = ({ onLogOutSuccess
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
-        PaperProps={{
-          sx: {
+        sx= {{
             mt: 1,
             borderRadius: 2,
             backgroundColor: theme.palette.background.paper,
             color: theme.palette.text.primary,
-          },
         }}
       >
         <MenuItem onClick={() => { handleClose(); handleDeleteAccount(); }}>
