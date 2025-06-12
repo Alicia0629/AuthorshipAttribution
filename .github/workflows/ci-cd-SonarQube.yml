@@ -47,6 +47,13 @@ jobs:
           cd FrontEnd
           npm test -- --coverage
 
+      - name: Install SonarQube Scanner
+        run: |
+          curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
+          unzip sonar-scanner.zip
+          mv sonar-scanner-4.8.0.2856-linux sonar-scanner
+          export PATH=$PATH:$PWD/sonar-scanner/bin
+
       - name: SonarQube Scan
         env:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
@@ -59,5 +66,5 @@ jobs:
             -Dsonar.sources=. \
             -Dsonar.host.url=$SONAR_HOST_URL \
             -Dsonar.login=$SONAR_TOKEN \
-            -Dsonar.python.coverage.reportPaths=coverage.xml
+            -Dsonar.python.coverage.reportPaths=coverage.xml \
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
