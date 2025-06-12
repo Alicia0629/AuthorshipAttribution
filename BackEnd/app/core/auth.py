@@ -1,5 +1,5 @@
-from datetime import datetime, timedelta
-from jose.exceptions import  JWTError, JWSError, ExpiredSignatureError
+from datetime import datetime, timedelta, timezone
+from jose.exceptions import JWTError, JWSError, ExpiredSignatureError
 from jose import jwt
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
@@ -20,7 +20,7 @@ def get_password_hash(password):
 
 def create_access_token(data: dict):
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     if "sub" not in to_encode:
         to_encode["sub"] = data.get("email")

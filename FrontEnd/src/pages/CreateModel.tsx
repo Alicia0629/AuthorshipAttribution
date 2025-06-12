@@ -8,9 +8,12 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  useTheme,
+  Tooltip,
+  IconButton,
+  Input
 } from '@mui/material';
-import { useTheme, Tooltip, IconButton, Input } from '@mui/material';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CustomButton from "../components/Button.tsx"
@@ -50,19 +53,19 @@ const CreateModel: React.FC<CreateModelProps> = ({ onNext }) => {
 
   const handleCreateModel = async () => {
     if (!selectedFile || !textColumn || !authorColumn) return;
-  
+
     const reader = new FileReader();
-  
-    reader.onload = async () => {
+
+    reader.onload = () => {
       const csvText = reader.result as string;
-      
+
       Papa.parse<CsvRow>(csvText, {
         header: true,
         complete: async (results) => {
           const labels = results.data.map((row) => row[authorColumn] as string);
           const uniqueLabels = Array.from(new Set(labels)).filter(Boolean);
 
-          const base64File = btoa(unescape(encodeURIComponent(csvText)));
+          const base64File = btoa(encodeURIComponent(csvText));
           const token = localStorage.getItem('token');
 
           if (token) {
@@ -72,15 +75,19 @@ const CreateModel: React.FC<CreateModelProps> = ({ onNext }) => {
               label_column: authorColumn,
               num_labels: uniqueLabels.length,
             };
-            const response = await sendModelData(payload, token);
-            console.log("Response from sendModelData:", response);
-            console.log("Model ID:", response.model_id);
-            onNext(response.model_id);
+            try {
+              const response = await sendModelData(payload, token);
+              console.log("Response from sendModelData:", response);
+              console.log("Model ID:", response.model_id);
+              onNext(response.model_id);
+            } catch (error) {
+              console.error("Error sending model data:", error);
+            }
           }
         },
       });
     };
-  
+
     reader.readAsText(selectedFile);
   };
   

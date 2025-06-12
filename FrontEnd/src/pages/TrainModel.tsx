@@ -21,6 +21,13 @@ const TrainModel: React.FC<TrainModelProps> = ({ model_id, onNext, onReset }) =>
     await deleteModel(model_id, token);
     onReset(); // Reiniciar el flujo al estado inicial
   };
+
+  const statusText =
+    status === 'IN_QUEUE'
+      ? 'En cola...'
+      : status === 'IN_PROGRESS'
+      ? 'Entrenando...'
+      : status;
   
 
   useEffect(() => {
@@ -86,11 +93,7 @@ const TrainModel: React.FC<TrainModelProps> = ({ model_id, onNext, onReset }) =>
           <>
             <Box sx={{ mb: 2 }}>
                 <Typography variant="body1" gutterBottom>
-                Estado: {status === 'IN_QUEUE'
-                  ? 'En cola...'
-                  : status === 'IN_PROGRESS'
-                  ? 'Entrenando...'
-                  : status}
+                  Estado: {statusText}
                 </Typography>
               <LinearProgress variant= 'indeterminate'/>
             </Box>

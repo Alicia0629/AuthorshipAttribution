@@ -31,10 +31,18 @@ const PredictModel: React.FC<PredictModelProps> = ({ model_id, onNext }) => {
   const [currentText, setCurrentText] = useState("");
   const [result, setResult] = useState<PredictionResult | null>(null);
   const theme = useTheme();
-  const token = localStorage.getItem('token') || '';
+  const token = localStorage.getItem('token') ?? '';
   const [loading, setLoading] = useState<boolean>(false);
   const [history, setHistory] = useState<PredictionResult[]>([]);
   const [status, setStatus] = useState<string>('IN_QUEUE');
+
+  const statusText =
+    status === 'IN_QUEUE'
+      ? 'En cola...'
+      : status === 'IN_PROGRESS'
+      ? 'Entrenando...'
+      : status;
+  
 
   useEffect(() => {
     // Llamar al endpoint para obtener los datos del modelo
@@ -211,26 +219,25 @@ const PredictModel: React.FC<PredictModelProps> = ({ model_id, onNext }) => {
           {loading ? (
             <Box sx={{ mb: 2 }}>
               <Typography variant="body1" gutterBottom>
-                Estado:{' '}
-                {status === 'IN_QUEUE'
-                  ? 'En cola...'
-                  : status === 'IN_PROGRESS'
-                  ? 'Procesando...'
-                  : status}
+                Estado: {statusText}
               </Typography>
               <LinearProgress variant="indeterminate" />
             </Box>
-          ) : result ? (
-            <>
-              <Typography>"{result.text}"</Typography>
-              <Typography variant="body2" color="text.secondary">
-                {result.prediction} ({(result.confidence * 100).toFixed(1)}%)
-              </Typography>
-            </>
           ) : (
-            <Typography variant="body2" color="text.secondary">
-              Introduce un texto y haz clic en enviar para ver la predicción.
-            </Typography>
+            <>
+            {result ? (
+              <>
+                <Typography>"{result.text}"</Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {result.prediction} ({(result.confidence * 100).toFixed(1)}%)
+                </Typography>
+              </>
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                Introduce un texto y haz clic en enviar para ver la predicción.
+              </Typography>
+            )}
+            </>
           )}
         </Paper>
 

@@ -10,12 +10,15 @@ def predict_text(text, model_id):
     model = torch.load(f"/runpod-volume/{model_id}_model.pth", map_location=device, weights_only=False)
     model.to(device)
 
-
     label_mapping = None
     try:
         label_mapping = joblib.load(f"/runpod-volume/{model_id}_labels.pkl")
-    except:
-        pass
+    except FileNotFoundError:
+        print(f"Label mapping file not found for model ID: {model_id}")
+    except joblib.externals.loky.process_executor.TerminatedWorkerError as e:
+        print(f"Error loading label mapping: {e}")
+    except Exception as e:
+        print(f"Unexpected error: {e}")
 
     inputs = tokenizer(text, padding="max_length", truncation=True, return_tensors="pt").to(device)
     with torch.no_grad():
