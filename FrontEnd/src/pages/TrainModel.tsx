@@ -52,7 +52,7 @@ const TrainModel: React.FC<TrainModelProps> = ({ model_id, onNext, onReset }) =>
     checkStatus();
 
     return () => {    };
-  }, [model_id, onNext, onReset]);
+  }, [model_id, onNext, onReset, token]);
 
   return (
     <Box sx={{ maxWidth: 1200, mx: 'auto', my: 4 }}>

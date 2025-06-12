@@ -26,19 +26,10 @@ jobs:
           cd BackEnd
           pip install -r requirements.txt
 
-      - name: Run tests
-        env:
-          SECRET_KEY: ${{ secrets.SECRET_KEY }}
-          ALGORITHM: ${{ secrets.ALGORITHM }}
-          ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
-          URL_TRAIN: ${{ secrets.URL_TRAIN }}
-          URL_PREDICT: ${{ secrets.URL_PREDICT }}
-          URL_DELETE: ${{ secrets.URL_DELETE }}
-          RUNPOD_KEY: ${{ secrets.RUNPOD_KEY }}
-          DB_URL: ${{ secrets.DB_URL }}
-          PYTHONPATH: ./BackEnd
+      - name: Check for unused imports
         run: |
-          pytest BackEnd/tests/
+          cd BackEnd
+          flake8 --select=F401
 
       - name: Build Docker image
         env:
@@ -53,3 +44,17 @@ jobs:
         run: |
           cd BackEnd
           docker build -t authorship-attribution .
+
+      - name: Run tests
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          ALGORITHM: ${{ secrets.ALGORITHM }}
+          ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
+          URL_TRAIN: ${{ secrets.URL_TRAIN }}
+          URL_PREDICT: ${{ secrets.URL_PREDICT }}
+          URL_DELETE: ${{ secrets.URL_DELETE }}
+          RUNPOD_KEY: ${{ secrets.RUNPOD_KEY }}
+          DB_URL: ${{ secrets.DB_URL }}
+          PYTHONPATH: ./BackEnd
+        run: |
+          pytest BackEnd/tests/ 

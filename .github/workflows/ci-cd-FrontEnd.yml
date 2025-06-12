@@ -26,10 +26,10 @@ jobs:
           cd FrontEnd
           npm ci
 
-      - name: Run tests
+      - name: Check for unused imports
         run: |
           cd FrontEnd
-          npm test
+          npx eslint src --ext .js,.jsx,.ts,.tsx
 
       - name: Build application
         run: |
@@ -40,3 +40,8 @@ jobs:
         run: |
           cd FrontEnd
           docker build -t authorship-attribution-frontend .
+
+      - name: Run tests
+        run: |
+          cd FrontEnd
+          npm test 

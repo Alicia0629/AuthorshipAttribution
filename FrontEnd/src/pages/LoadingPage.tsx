@@ -70,7 +70,7 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ onRedirect, message=DEFULT_ME
     };
 
     initPage();
-  }, [onRedirect]);
+  }, [onRedirect, currentMessage]);
 
   return (
     <Box

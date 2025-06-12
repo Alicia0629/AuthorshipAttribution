@@ -4,7 +4,6 @@ import Layout from "./components/Layout/GeneralLayout.tsx";
 import AuthLayout from "./components/Layout/AuthLayout.tsx";
 import Login from "./pages/Login.tsx";
 import Profile from "./pages/Profile.tsx";
-import CreateModel from "./pages/CreateModel.tsx";
 import TopBarMenu from "./components/TopBar";
 import { lightTheme, darkTheme } from './styles/styles.tsx';
 import { ThemeProvider, CssBaseline } from '@mui/material';
