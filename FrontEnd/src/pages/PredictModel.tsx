@@ -5,7 +5,7 @@ import { predictText, checkModelStatus, getModelDetails , deleteModel} from '../
 
 interface PredictModelProps {
   model_id: string;
-  onNext: (step?: string, data?: any, message?: string) => void;
+  onNext: (step?: string, data?: string, message?: string) => void;
 }
 
 interface ModelData {
@@ -82,7 +82,7 @@ const PredictModel: React.FC<PredictModelProps> = ({ model_id, onNext }) => {
 
       return () => clearInterval(interval);
     }
-  }, [loading, model_id, token, currentText]);
+  }, [loading, model_id, token, currentText, onNext]);
 
   const handleClassify = () => {
     if (result) {

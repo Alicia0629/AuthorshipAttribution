@@ -1,7 +1,11 @@
-import {Button, useTheme} from '@mui/material';
+import { Button, useTheme, ButtonProps } from '@mui/material';
 
-const CustomButton = ({ children, ...props }: any) => {
-    const theme = useTheme();
+interface CustomButtonProps extends ButtonProps {
+  children: React.ReactNode;
+}
+
+const CustomButton = ({ children, ...props }: CustomButtonProps) => {
+  const theme = useTheme();
 
     return (
         <Button

@@ -1,0 +1,64 @@
+name: CI/CD SonarQube Pipeline
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies (Backend)
+        run: |
+          cd BackEnd
+          pip install -r requirements.txt
+
+      - name: Install dependencies (FrontEnd)
+        run: |
+          cd FrontEnd
+          npm ci
+
+      - name: Run tests with coverage (Backend)
+        env:
+          PYTHONPATH: ./BackEnd
+        run: |
+          pytest BackEnd/tests/ --cov=app --cov-report=xml --cov-report=term-missing
+
+      - name: Run tests with coverage (FrontEnd)
+        run: |
+          cd FrontEnd
+          npm test -- --coverage
+          mkdir -p coverage && mv coverage/lcov.info coverage/
+
+      - name: SonarQube Scan
+        env:
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          cd BackEnd
+          sonar-scanner \
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
+            -Dsonar.sources=. \
+            -Dsonar.host.url=$SONAR_HOST_URL \
+            -Dsonar.login=$SONAR_TOKEN \
+            -Dsonar.python.coverage.reportPaths=coverage.xml
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info

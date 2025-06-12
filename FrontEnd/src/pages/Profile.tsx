@@ -16,8 +16,15 @@ import {
 import { getUserProfile } from '../services/api.ts';
 import { Lock as LockIcon } from '@mui/icons-material';
 
+interface User {
+  id: number;
+  email: string;
+  full_name?: string;
+  created_at?: string;
+}
+
 const Profile: React.FC = () => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
 
@@ -33,6 +40,7 @@ const Profile: React.FC = () => {
         const profileData = await getUserProfile(token);
         setUser(profileData);
       } catch (err) {
+        console.error(err);
         setError('Error al cargar el perfil');
       } finally {
         setLoading(false);

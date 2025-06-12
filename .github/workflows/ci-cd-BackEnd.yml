@@ -45,7 +45,7 @@ jobs:
           cd BackEnd
           docker build -t authorship-attribution .
 
-      - name: Run tests with coverage
+      - name: Run tests
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
           ALGORITHM: ${{ secrets.ALGORITHM }}
@@ -57,15 +57,4 @@ jobs:
           DB_URL: ${{ secrets.DB_URL }}
           PYTHONPATH: ./BackEnd
         run: |
-          pytest BackEnd/tests/ --cov=app --cov-report=xml --cov-report=term-missing
-
-      - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@v2
-        with:
-          args: >
-            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
-            -Dsonar.host.url=https://sonarcloud.io
-            -Dsonar.python.coverage.reportPaths=BackEnd/coverage.xml
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          pytest BackEnd/tests/ 

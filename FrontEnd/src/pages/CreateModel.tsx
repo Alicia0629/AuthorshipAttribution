@@ -21,6 +21,10 @@ interface CreateModelProps {
   onNext: (modelId: string) => void;
 }
 
+type CsvRow = {
+  [key: string]: string | number | null;
+};
+
 const CreateModel: React.FC<CreateModelProps> = ({ onNext }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -34,7 +38,7 @@ const CreateModel: React.FC<CreateModelProps> = ({ onNext }) => {
     setLoading(true);
     Papa.parse(file, {
       complete: (result) => {
-        const csvColumns = result.meta.fields; 
+        const csvColumns = result.meta.fields || []; 
         setColumns(csvColumns);
         setLoading(false);
       },
@@ -52,28 +56,28 @@ const CreateModel: React.FC<CreateModelProps> = ({ onNext }) => {
     reader.onload = async () => {
       const csvText = reader.result as string;
       
-      Papa.parse(csvText, {
+      Papa.parse<CsvRow>(csvText, {
         header: true,
         complete: async (results) => {
-          const labels = results.data.map((row: any) => row[authorColumn]);
+          const labels = results.data.map((row) => row[authorColumn] as string);
           const uniqueLabels = Array.from(new Set(labels)).filter(Boolean);
-          
+
           const base64File = btoa(unescape(encodeURIComponent(csvText)));
           const token = localStorage.getItem('token');
-          
+
           if (token) {
             const payload = {
               file: base64File,
               text_column: textColumn,
               label_column: authorColumn,
-              num_labels: uniqueLabels.length
+              num_labels: uniqueLabels.length,
             };
             const response = await sendModelData(payload, token);
             console.log("Response from sendModelData:", response);
             console.log("Model ID:", response.model_id);
             onNext(response.model_id);
           }
-        }
+        },
       });
     };
   
@@ -92,9 +96,8 @@ const CreateModel: React.FC<CreateModelProps> = ({ onNext }) => {
           return;
         }
 
-        //TODO: Mirar si usuario ya tiene un modelo
-
       } catch (err) {
+        console.error(err);
         setError('Error al cargar el perfil');
       } finally {
         setLoading(false);
@@ -162,7 +165,7 @@ const CreateModel: React.FC<CreateModelProps> = ({ onNext }) => {
               id="csv-upload"
               style={{ display: 'none' }}
               onChange={(e) => {
-                const file = e.target.files?.[0];
+                const file = (e.target as HTMLInputElement).files?.[0];
                 if (file) {
                   setSelectedFile(file);
                   handleFileUpload(file);
