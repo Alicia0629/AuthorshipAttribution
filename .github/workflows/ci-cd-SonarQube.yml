@@ -47,6 +47,11 @@ jobs:
 
       - name: Run tests with coverage (Backend)
         env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          ALGORITHM: ${{ secrets.ALGORITHM }}
+          ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
+          RUNPOD_KEY: ${{ secrets.RUNPOD_KEY }}
+          DB_URL: ${{ secrets.DB_URL }}
           PYTHONPATH: ./BackEnd
         run: |
           pytest BackEnd/tests/ --cov=app --cov-report=xml --cov-report=term-missing

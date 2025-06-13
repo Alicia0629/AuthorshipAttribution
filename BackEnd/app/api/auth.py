@@ -9,7 +9,6 @@ router = APIRouter()
 
 @router.post("/login", response_model=schemas.Token)
 def login(data: schemas.LoginData, db: Session = Depends(get_db)):
-    print("login")
     user = crud.get_user_by_email(db, data.email)
     if not user or not auth.verify_password(data.password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Credenciales incorrectas")
