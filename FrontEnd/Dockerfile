@@ -14,8 +14,9 @@ FROM node:18-alpine AS runner
 WORKDIR /app
 
 # Non-root user for security
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-RUN npm install -g serve --ignore-scripts
+RUN addgroup -S appgroup \
+    && adduser -S appuser -G appgroup \
+    && npm install -g serve --ignore-scripts
 COPY --from=builder /app/dist ./dist
 RUN chown -R appuser:appgroup /app
 USER appuser

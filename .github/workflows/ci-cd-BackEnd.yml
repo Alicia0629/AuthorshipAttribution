@@ -36,9 +36,6 @@ jobs:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
           ALGORITHM: ${{ secrets.ALGORITHM }}
           ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
-          URL_TRAIN: ${{ secrets.URL_TRAIN }}
-          URL_PREDICT: ${{ secrets.URL_PREDICT }}
-          URL_DELETE: ${{ secrets.URL_DELETE }}
           RUNPOD_KEY: ${{ secrets.RUNPOD_KEY }}
           DB_URL: ${{ secrets.DB_URL }}
         run: |
@@ -50,9 +47,6 @@ jobs:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
           ALGORITHM: ${{ secrets.ALGORITHM }}
           ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
-          URL_TRAIN: ${{ secrets.URL_TRAIN }}
-          URL_PREDICT: ${{ secrets.URL_PREDICT }}
-          URL_DELETE: ${{ secrets.URL_DELETE }}
           RUNPOD_KEY: ${{ secrets.RUNPOD_KEY }}
           DB_URL: ${{ secrets.DB_URL }}
           PYTHONPATH: ./BackEnd
