@@ -4,6 +4,8 @@ from unittest.mock import patch, MagicMock
 from app.main import app
 from app.db.session import get_db
 from tests.conftest import override_get_db, auth_token, client
+from fastapi import HTTPException
+from app.api.model import check_model
 
 TEST_REQUEST_PAYLOAD = {
     "text_column": "text",
@@ -12,7 +14,7 @@ TEST_REQUEST_PAYLOAD = {
     "file": "mock-file-path.csv"
 }
 
-def setup_test():
+def setup_test(auth_token, override_get_db):
     """Configuración común para los tests."""
     app.dependency_overrides[get_db] = override_get_db
     headers = {"Authorization": f"Bearer {auth_token}"}
@@ -46,7 +48,7 @@ def test_train_model_success(
     auth_token
 ):
     """Test del endpoint /model/train con datos válidos."""
-    headers = setup_test()
+    headers = setup_test(auth_token, override_get_db)
     
     # Configurar mocks
     mock_model = MagicMock()
@@ -73,7 +75,7 @@ def test_train_model_success(
 @patch("requests.post")
 def test_predict_model_success(mock_requests_post, mock_get_model_by_id, override_get_db, auth_token):
     """Test del endpoint /model/predict con datos válidos."""
-    headers = setup_test()
+    headers = setup_test(auth_token, override_get_db)
 
     # Configurar mocks
     mock_model = MagicMock()
@@ -101,7 +103,7 @@ def test_predict_model_success(mock_requests_post, mock_get_model_by_id, overrid
 @patch("requests.post")
 def test_delete_model_success(mock_requests_post, override_get_db, auth_token):
     """Test del endpoint /model/delete con datos válidos."""
-    headers = setup_test()
+    headers = setup_test(auth_token, override_get_db)
     
     # Crear modelo
     model_id = create_test_model(mock_requests_post, headers)
@@ -123,7 +125,7 @@ def test_delete_model_success(mock_requests_post, override_get_db, auth_token):
 @patch("requests.get")
 def test_check_status_success(mock_requests_get, mock_requests_post, override_get_db, auth_token):
     """Test del endpoint /model/status/{model_id} con datos válidos."""
-    headers = setup_test()
+    headers = setup_test(auth_token, override_get_db)
     
     # Crear modelo
     model_id = create_test_model(mock_requests_post, headers)
@@ -148,9 +150,75 @@ def test_check_status_success(mock_requests_get, mock_requests_post, override_ge
 
 @patch("requests.post")
 @patch("requests.get")
+def test_check_status_unparseable_error(mock_requests_get, mock_requests_post, override_get_db, auth_token):
+    headers = setup_test(auth_token, override_get_db)
+    
+    # Crear modelo
+    model_id = create_test_model(mock_requests_post, headers)
+
+    # Simula un error que no es un JSON parseable
+    mock_requests_get.return_value.json.return_value = {
+        "error": "this-is-not-json"
+    }
+
+    response = client.get(f"/model/status/{model_id}", headers=headers)
+
+    assert response.status_code == 200
+    assert response.json()["error"] == "this-is-not-json"
+
+    cleanup_test()
+
+@patch("app.api.model.crud.delete_model")
+@patch("requests.post")
+@patch("requests.get")
+def test_check_status_file_not_found_deletes_model(mock_requests_get, mock_requests_post, mock_delete_model, override_get_db, auth_token):
+    headers = setup_test(auth_token, override_get_db)
+    
+    # Crear modelo
+    model_id = create_test_model(mock_requests_post, headers)
+
+    mock_requests_get.return_value.json.return_value = {
+        "error": json.dumps({"error_type": "<class 'FileNotFoundError'>"})
+    }
+
+    mock_delete_model.return_value = True
+
+    response = client.get(f"/model/status/{model_id}", headers=headers)
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "deleted"
+
+    cleanup_test()
+
+@patch("app.api.model.crud.delete_model")
+@patch("requests.post")
+@patch("requests.get")
+def test_check_status_file_not_found_delete_fails(mock_requests_get, mock_requests_post, mock_delete_model, override_get_db, auth_token):
+    headers = setup_test(auth_token, override_get_db)
+    
+    # Crear modelo
+    model_id = create_test_model(mock_requests_post, headers)
+
+    mock_requests_get.return_value.json.return_value = {
+        "error": json.dumps({"error_type": "<class 'FileNotFoundError'>"})
+    }
+
+    mock_delete_model.return_value = False
+
+    response = client.get(f"/model/status/{model_id}", headers=headers)
+
+    assert response.status_code == 200
+    assert response.json()["error"] == '{"error_type": "<class \'FileNotFoundError\'>"}'
+
+    cleanup_test()
+
+
+
+@patch("requests.post")
+@patch("requests.get")
 def test_get_latest_model_success(mock_requests_get, mock_requests_post, override_get_db, auth_token):
     """Test del endpoint /model/latest-model."""
-    headers = setup_test()
+    headers = setup_test(auth_token, override_get_db)
     
     # Crear modelo
     model_id = create_test_model(mock_requests_post, headers)
@@ -171,11 +239,27 @@ def test_get_latest_model_success(mock_requests_get, mock_requests_post, overrid
 
     cleanup_test()
 
+
+@patch("app.api.model.crud.get_latest_model_by_user")
+def test_get_latest_model_no_model(mock_get_latest_model_by_user, override_get_db, auth_token):
+    headers = setup_test(auth_token, override_get_db)
+
+    # Mock para que retorne None -> simula que no hay modelos
+    mock_get_latest_model_by_user.return_value = None
+
+    response = client.get("/model/latest-model", headers=headers)
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "no_model"}
+
+    cleanup_test()
+
+
 @patch("requests.post")
 @patch("requests.get")
 def test_get_model_details_success(mock_requests_get, mock_requests_post, override_get_db, auth_token):
     """Test del endpoint /model/{model_id}."""
-    headers = setup_test()
+    headers = setup_test(auth_token, override_get_db)
     
     # Crear modelo
     model_id = create_test_model(mock_requests_post, headers)
@@ -197,3 +281,37 @@ def test_get_model_details_success(mock_requests_get, mock_requests_post, overri
     assert response.json()["num_labels"] == 2
 
     cleanup_test()
+
+
+def test_check_model_passes_when_model_exists_and_user_matches():
+    current_user = MagicMock()
+    current_user.id = 1
+    
+    model = MagicMock()
+    model.user_id = 1
+    
+    # No debería lanzar excepción
+    check_model(current_user, model)
+
+def test_check_model_raises_404_when_model_is_none():
+    current_user = MagicMock()
+    current_user.id = 1
+    
+    with pytest.raises(HTTPException) as exc_info:
+        check_model(current_user, None)
+    
+    assert exc_info.value.status_code == 404
+    assert exc_info.value.detail == "Model not found"
+
+def test_check_model_raises_403_when_user_id_differs():
+    current_user = MagicMock()
+    current_user.id = 1
+    
+    model = MagicMock()
+    model.user_id = 2  # distinto usuario
+    
+    with pytest.raises(HTTPException) as exc_info:
+        check_model(current_user, model)
+    
+    assert exc_info.value.status_code == 403
+    assert exc_info.value.detail == "Access denied"
