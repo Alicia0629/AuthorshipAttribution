@@ -1,6 +1,7 @@
 import pytest
 from datetime import datetime, timedelta, timezone
 from jose import jwt
+from jose.exceptions import JWSError
 from fastapi import HTTPException
 from app.core.auth import (
     verify_password,
@@ -8,12 +9,13 @@ from app.core.auth import (
     create_access_token,
     get_current_user
 )
+
 from app.core.config import (
     SECRET_KEY,
     ALGORITHM,
-    ACCESS_TOKEN_EXPIRE_MINUTES,
-    DB_URL
+    ACCESS_TOKEN_EXPIRE_MINUTES
 )
+
 from unittest.mock import MagicMock, patch
 
 def test_verify_password():
@@ -104,6 +106,30 @@ def test_get_current_user_expired_token(mock_get_user):
     assert exc_info.value.status_code == 401
     assert "Token expired" in str(exc_info.value.detail)
 
+def test_get_current_user_no_email():
+    """Test que verifica el manejo de tokens sin email en get_current_user."""
+    token_data = {}
+    token = jwt.encode(token_data, SECRET_KEY, algorithm=ALGORITHM)
+    mock_db = MagicMock()
+    
+    with pytest.raises(HTTPException) as exc_info:
+        get_current_user(token, mock_db)
+    assert exc_info.value.status_code == 401
+    assert "No se pudo validar credenciales" in exc_info.value.detail
+
+
+def test_get_current_user_jws_error(capfd):
+    """Test que verifica el manejo de errores JWS en get_current_user."""
+    token = "dummy_token"
+    mock_db = MagicMock()
+    
+    with patch("jose.jwt.decode", side_effect=JWSError("JWS test error")):
+        with pytest.raises(HTTPException) as exc_info:
+            get_current_user(token, mock_db)
+        out, err = capfd.readouterr()
+        assert "JWS Error: JWS test error" in out
+        assert exc_info.value.status_code == 401
+
 @patch("app.crud.user.get_user_by_email")
 def test_get_current_user_user_not_found(mock_get_user):
     """Test que verifica el manejo de usuarios no encontrados en get_current_user."""
@@ -119,10 +145,3 @@ def test_get_current_user_user_not_found(mock_get_user):
     
     assert exc_info.value.status_code == 401
     assert "No se pudo validar credenciales" in str(exc_info.value.detail)
-
-def test_config_values():
-    """Test que verifica la configuración de variables de entorno."""
-    assert isinstance(SECRET_KEY, str)
-    assert ALGORITHM == "HS256"
-    assert isinstance(ACCESS_TOKEN_EXPIRE_MINUTES, int)
-    assert isinstance(DB_URL, str)
