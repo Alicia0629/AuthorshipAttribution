@@ -93,6 +93,7 @@ const CreateModel: React.FC<CreateModelProps> = ({ onNext }) => {
 
   const handleFileUpload = (file: File) => {
     setLoading(true);
+    setSelectedFile(file);
     Papa.parse(file, {
       complete: handleParseComplete,
       header: true,
@@ -122,11 +123,25 @@ const CreateModel: React.FC<CreateModelProps> = ({ onNext }) => {
     });
   };
 
+  function toBase64(str: string): string {
+    const uint8Array = new TextEncoder().encode(str);
+    const binaryString = Array.from(uint8Array)
+      .map(byte => String.fromCharCode(byte))
+      .join('');
+    return btoa(binaryString);
+  }
+
+
   const handleCsvComplete = (results: Papa.ParseResult<CsvRow>, csvText: string) => {
+    // Añadir logs para debug
+    console.log('Selected columns:', { textColumn, authorColumn });
+    console.log('Available columns:', columns);
+    console.log('Sample data:', results.data[0]);
+
     const labels = results.data.map((row) => row[authorColumn] as string);
     const uniqueLabels = Array.from(new Set(labels)).filter(Boolean);
 
-    const base64File = btoa(encodeURIComponent(csvText));
+    const base64File = toBase64(csvText);
     const token = localStorage.getItem('token');
 
     if (token) {
@@ -137,14 +152,18 @@ const CreateModel: React.FC<CreateModelProps> = ({ onNext }) => {
         num_labels: uniqueLabels.length,
       };
 
+      // Log del payload
+      console.log('Sending payload:', payload);
+
       sendModelData(payload, token)
         .then((response) => {
           console.log('Response from sendModelData:', response);
-          console.log('Model ID:', response.model_id);
           onNext(response.model_id);
         })
         .catch((error) => {
           console.error('Error sending model data:', error);
+          // Mostrar el error al usuario
+          setError(error.response?.data?.detail || 'Error al crear el modelo');
         });
     }
   };
@@ -218,13 +237,14 @@ const CreateModel: React.FC<CreateModelProps> = ({ onNext }) => {
             </>
           )}
           {selectedFile && textColumn && authorColumn && (
-            <CustomButton
-              disabled={!selectedFile}
-              sx={{ mt: 3 }}
-              onClick={handleCreateModel}
-            >
-              Crear modelo
-            </CustomButton>
+            <Box sx={{ mt: 3 }}>
+              <CustomButton
+                disabled={!selectedFile}
+                onClick={handleCreateModel}
+              >
+                Crear modelo
+              </CustomButton>
+            </Box>
           )}
         </Box>
       </Box>
