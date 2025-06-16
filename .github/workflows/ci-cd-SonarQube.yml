@@ -70,7 +70,7 @@ jobs:
           args: >
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
             -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
-            -Dsonar.exclusions=**/*test*.py,**/*test*.js,FrontEnd/coverage/**,runpod
+            -Dsonar.exclusions=**/*test*.py,**/*test*.ts,**/*test*.tsx,FrontEnd/coverage/**,runpod
             -Dsonar.sources=.
             -Dsonar.python.coverage.reportPaths=coverage.xml
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
