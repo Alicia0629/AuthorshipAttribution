@@ -163,7 +163,7 @@ const CreateModel: React.FC<CreateModelProps> = ({ onNext }) => {
         .catch((error) => {
           console.error('Error sending model data:', error);
           // Mostrar el error al usuario
-          setError(error.response?.data?.detail || 'Error al crear el modelo');
+          setError(error.response?.data?.detail ?? 'Error al crear el modelo');
         });
     }
   };
