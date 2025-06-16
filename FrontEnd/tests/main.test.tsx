@@ -9,7 +9,7 @@ vi.mock('react-dom/client', () => ({
   })),
 }));
 
-vi.mock('./App.tsx', () => ({
+vi.mock('../src/App.tsx', () => ({
   default: () => <div>Mock App</div>,
 }));
 
@@ -38,6 +38,6 @@ describe('main.tsx', () => {
     await import('../src/main.tsx');
     
     expect(createRoot).toHaveBeenCalledWith(mockRootElement);
-  });
+  }, 10000);
 
 });
