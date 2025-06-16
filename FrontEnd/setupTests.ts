@@ -1,7 +1,10 @@
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
+
 import { vi } from 'vitest';
 
-// Mock de window.matchMedia
+vi.stubEnv('VITE_API_URL', 'http://test-api.com');
+
+
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: (query: string) => ({
