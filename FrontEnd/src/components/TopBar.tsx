@@ -76,12 +76,17 @@ const TopBarMenu: React.FC<{ onLogOutSuccess: () => void }> = ({ onLogOutSuccess
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
-        sx= {{
-            mt: 1,
-            borderRadius: 2,
-            backgroundColor: theme.palette.background.paper,
-            color: theme.palette.text.primary,
+        slotProps={{
+          paper: {
+            sx: {
+              mt: 1,
+              borderRadius: 2,
+              backgroundColor: theme.palette.background.paper,
+              color: theme.palette.text.primary,
+            },
+          },
         }}
+
       >
         <MenuItem onClick={() => { handleClose(); handleDeleteAccount(); }}>
           <DeleteIcon fontSize="small" sx={{ mr: 1 }} />

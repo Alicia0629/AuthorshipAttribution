@@ -28,10 +28,13 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
           }}
         >
           <Typography variant="h5" component="h1" gutterBottom>
-            Authorship Attribution
+            Atribución de Autoría
           </Typography>
           <Typography variant="body1">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sit amet interdum felis. Vivamus sit amet facilisis mi. Aliquam tristique justo ut erat bibendum, ut euismod augue cursus. Maecenas sagittis ornare augue, vel posuere enim congue at. Cras ultrices id felis eu porttitor. Vestibulum vestibulum nisl sed enim semper, id imperdiet nulla porta.
+Esta aplicación es un prototipo desarrollado como parte de un TFG.
+Procesa textos que usted proporciona para identificar posibles autores usando procesamiento del lenguaje.
+Tenga en cuenta que los modelos utilizados están alojados en un servicio externo llamado RunPod, y toda la información procesada se utiliza únicamente con fines experimentales y académicos.
+
           </Typography>
         </Box>
 
