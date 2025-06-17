@@ -61,6 +61,12 @@ jobs:
           cd FrontEnd
           npm test -- --coverage
 
+      - name: Move frontend coverage to root
+        run: mv FrontEnd/coverage/lcov.info .
+
+      - name: Fix lcov paths for Sonar
+        run: sed -i 's|SF:|SF:FrontEnd/|' lcov.info
+
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@master
         env:
@@ -70,7 +76,7 @@ jobs:
           args: >
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
             -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
-            -Dsonar.exclusions=**/*test*.py,FrontEnd/tests/*,FrontEnd/coverage/**,runpod
-            -Dsonar.sources=.
+            -Dsonar.sources=BackEnd,FrontEnd/src
+            -Dsonar.exclusions=**/*test*.py,FrontEnd/tests/**,FrontEnd/coverage/**,FrontEnd/src/pages/**,runpod/**
             -Dsonar.python.coverage.reportPaths=coverage.xml
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.javascript.lcov.reportPaths=lcov.info
