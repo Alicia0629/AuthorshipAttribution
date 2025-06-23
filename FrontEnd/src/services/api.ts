@@ -83,8 +83,6 @@ export const predictText = async (text: string, modelId: string, token: string) 
               text: text,
               model_id: String(modelId)
   };
-  console.log('Payload:', payload);
-  console.log('Token:', token);
 
   const response = await fetch(`${API_URL}/model/predict`, {
     method: 'POST',
@@ -94,7 +92,6 @@ export const predictText = async (text: string, modelId: string, token: string) 
     },
     body: JSON.stringify(payload),
   });
-  console.log('Respuesta del backend:', response);
 
   if (!response.ok) {
     const errorData = await response.json();

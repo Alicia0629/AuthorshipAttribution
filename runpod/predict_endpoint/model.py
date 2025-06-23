@@ -4,7 +4,7 @@ import joblib
 import torch.nn.functional as F
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-tokenizer = AutoTokenizer.from_pretrained("mrm8488/bert-tiny-finetuned-sms-spam-detection")
+tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
 
 def predict_text(text, model_id):
     model = torch.load(f"/runpod-volume/{model_id}_model.pth", map_location=device, weights_only=False)

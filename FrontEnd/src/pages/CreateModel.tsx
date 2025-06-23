@@ -110,6 +110,7 @@ const CreateModel: React.FC<CreateModelProps> = ({ onNext }) => {
 
   const handleCreateModel = async () => {
     if (!selectedFile || !textColumn || !authorColumn) return;
+    setLoading(true);
 
     const reader = new FileReader();
     reader.onload = () => processCsv(reader.result as string);
@@ -133,10 +134,6 @@ const CreateModel: React.FC<CreateModelProps> = ({ onNext }) => {
 
 
   const handleCsvComplete = (results: Papa.ParseResult<CsvRow>, csvText: string) => {
-    // Añadir logs para debug
-    console.log('Selected columns:', { textColumn, authorColumn });
-    console.log('Available columns:', columns);
-    console.log('Sample data:', results.data[0]);
 
     const labels = results.data.map((row) => row[authorColumn] as string);
     const uniqueLabels = Array.from(new Set(labels)).filter(Boolean);
@@ -152,17 +149,13 @@ const CreateModel: React.FC<CreateModelProps> = ({ onNext }) => {
         num_labels: uniqueLabels.length,
       };
 
-      // Log del payload
-      console.log('Sending payload:', payload);
-
       sendModelData(payload, token)
         .then((response) => {
-          console.log('Response from sendModelData:', response);
           onNext(response.model_id);
         })
         .catch((error) => {
+          setLoading(false);
           console.error('Error sending model data:', error);
-          // Mostrar el error al usuario
           setError(error.response?.data?.detail ?? 'Error al crear el modelo');
         });
     }
