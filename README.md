@@ -5,6 +5,7 @@ Aplicación web diseñada para facilitar la atribución de autoría de textos, p
 
 - [Tecnologías](#tecnologías)
 - [Calidad del Código](#calidad-del-código)
+- [Cómo probar la aplicación](#cómo-probar-la-aplicación)
 - [Despliegue](#despliegue)
 - [Ejecución del Proyecto](#ejecución-del-proyecto)
   - [Ejecución con Docker](#ejecución-con-docker)
@@ -29,6 +30,14 @@ El proyecto utiliza SonarCloud para el análisis continuo de calidad del código
 [https://sonarcloud.io/project/overview?id=Alicia0629_AuthorshipAttribution](https://sonarcloud.io/project/overview?id=Alicia0629_AuthorshipAttribution)
 
 Este sistema ayuda a detectar bugs, vulnerabilidades y mejorar la mantenibilidad del código en el frontend y backend.
+
+## Cómo Probar la Aplicación
+
+Para probar la atribución de autoría, abre la aplicación y sube un archivo `.csv` con columnas de texto y autor.
+
+Incluimos un ejemplo en `Examples/tweets.csv` con tweets de varias celebridades para entrenar y probar modelos.
+
+Solo inicia sesión, carga ese archivo y sigue las instrucciones para seleccionar columnas y entrenar.
 
 ## Despliegue
 

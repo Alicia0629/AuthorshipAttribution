@@ -5,6 +5,7 @@ Web application designed to facilitate authorship attribution of texts, allowing
 
 - [Technologies](#technologies)
 - [Code Quality](#code-quality)
+- [How to Test the Application](#how-to-test-the-application)
 - [Deployment](#deployment)
 - [Project Execution](#project-execution)
   - [Execution with Docker](#execution-with-docker)
@@ -30,6 +31,15 @@ The project uses SonarCloud for continuous code quality analysis, integrated wit
 [https://sonarcloud.io/project/overview?id=Alicia0629_AuthorshipAttribution](https://sonarcloud.io/project/overview?id=Alicia0629_AuthorshipAttribution)
 
 This system helps detect bugs, vulnerabilities, and improve maintainability in both frontend and backend code.
+
+## How to Test the Application
+
+To test authorship attribution, open the app and upload a .csv file with text and author columns.
+
+We provide an example file at `Examples/tweets.csv` containing tweets from various celebrities to train and test models.
+
+Just log in, upload this file, and follow the steps to select columns and train your model.
+
 
 ## Deployment
 
