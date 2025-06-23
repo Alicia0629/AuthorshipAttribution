@@ -64,7 +64,6 @@ const PredictModel: React.FC<PredictModelProps> = ({ model_id, onNext }) => {
         console.log("Comprobando el estado del modelo...");
         checkModelStatus(model_id, token)
           .then((data) => {
-            console.log(data);
             setStatus(data.status);
             if (data.status === 'COMPLETED') {
               setLoading(false);

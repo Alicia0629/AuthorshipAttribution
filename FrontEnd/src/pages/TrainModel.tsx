@@ -15,7 +15,6 @@ const TrainModel: React.FC<TrainModelProps> = ({ model_id, onNext, onReset }) =>
   const theme = useTheme();
   const isMounted = useRef(true);
   const token = localStorage.getItem('token');
-  console.log("token", token);
 
   const handleDeleteAndReset = async (token: string) => {
     await deleteModel(model_id, token);

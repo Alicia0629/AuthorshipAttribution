@@ -1,14 +1,14 @@
 import torch
 import pandas as pd
 import numpy as np
-from transformers import AutoModelForSequenceClassification, AutoTokenizer, TrainingArguments, Trainer
+from transformers import AutoModelForSequenceClassification, AutoTokenizer, TrainingArguments, Trainer, EarlyStoppingCallback
 from datasets import Dataset
 import evaluate
 import io
 import joblib
 import base64
 
-tokenizer = AutoTokenizer.from_pretrained("mrm8488/bert-tiny-finetuned-sms-spam-detection")
+tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
 metric_accuracy = evaluate.load("accuracy")
 metric_f1 = evaluate.load("f1")
 
@@ -31,7 +31,7 @@ def train_model(file_content, text_column, label_column, model_id):
 
     num_labels = df["label"].nunique()
     model = AutoModelForSequenceClassification.from_pretrained(
-        "mrm8488/bert-tiny-finetuned-sms-spam-detection",
+        "distilbert-base-uncased",
         num_labels=num_labels,
         ignore_mismatched_sizes=True
     )
@@ -40,7 +40,7 @@ def train_model(file_content, text_column, label_column, model_id):
     train_data = dataset["train"]
     test_data = dataset["test"]
 
-    epoch = 10
+    epoch = 3
     lengths = [len(tokenizer(example["text"])["input_ids"]) for example in train_data]
     max_length = min(int(np.percentile(lengths, 95)), 512)
     train_data = train_data.map(lambda row: tokenizer(row['text'], padding="max_length", truncation=True, max_length=max_length), batched=True)
@@ -51,6 +51,11 @@ def train_model(file_content, text_column, label_column, model_id):
         num_train_epochs=epoch,
         per_device_train_batch_size=16,
         per_device_eval_batch_size=16,
+        evaluation_strategy="epoch",
+        save_strategy="epoch",
+        load_best_model_at_end=True,
+        metric_for_best_model="eval_f1",
+        greater_is_better=True,
         warmup_steps=500,
         weight_decay=0.01,
         logging_dir='./logs',
@@ -63,6 +68,7 @@ def train_model(file_content, text_column, label_column, model_id):
         train_dataset=train_data,
         eval_dataset=test_data,
         compute_metrics=compute_metrics,
+        callbacks=[EarlyStoppingCallback(early_stopping_patience=2)]
     )
 
     trainer.train()

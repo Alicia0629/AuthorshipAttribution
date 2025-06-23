@@ -20,7 +20,7 @@ const MultiStepModel = () => {
   return (
     <>
       {step === 'loading' && <LoadingPage onRedirect={handleRedirect} message={loadingMessage} />}
-      {step === 'upload' && <CreateModel onNext={(id) => handleRedirect('training', id, 'Abriendo tu modelo...')} />}
+      {step === 'upload' && <CreateModel onNext={(id) => handleRedirect('training', id)} />}
       {step === 'training' && (
         <TrainModel
           model_id={model_id}
