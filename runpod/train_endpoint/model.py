@@ -40,7 +40,7 @@ def train_model(file_content, text_column, label_column, model_id):
     train_data = dataset["train"]
     test_data = dataset["test"]
 
-    epoch = 3
+    epoch = 30
     lengths = [len(tokenizer(example["text"])["input_ids"]) for example in train_data]
     max_length = min(int(np.percentile(lengths, 95)), 512)
     train_data = train_data.map(lambda row: tokenizer(row['text'], padding="max_length", truncation=True, max_length=max_length), batched=True)
@@ -51,7 +51,7 @@ def train_model(file_content, text_column, label_column, model_id):
         num_train_epochs=epoch,
         per_device_train_batch_size=16,
         per_device_eval_batch_size=16,
-        evaluation_strategy="epoch",
+        eval_strategy="epoch",
         save_strategy="epoch",
         load_best_model_at_end=True,
         metric_for_best_model="eval_f1",
