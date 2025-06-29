@@ -60,6 +60,7 @@ def train_model(file_content, text_column, label_column, model_id):
         weight_decay=0.01,
         logging_dir='./logs',
         logging_steps=10,
+        save_total_limit=1,
     )
 
     trainer = Trainer(
